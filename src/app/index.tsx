@@ -1,98 +1,104 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, StyleSheet, Pressable, TextInput } from "react-native";
+import React, { useState, useEffect } from 'react';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+export default function Index() {
+  let [result, setResult] = useState(0);
+  const [value, setValue] = useState<string>('');
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+  const handleTextChange = (text: string) => {
+    if (text === '' || /^\d*\.?\d{0,2}$/.test(text)) {
+      setValue(text);
+    }
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
+
+  const hasInput = value.trim().length > 0;
+
+  function calculateTax(num: number) {
+    console.log("Calculating tax by: ", num, "%")
+    let percentage = num * 0.01
+    setResult(+value + (+value * percentage))
+    console.log(result)
+    return result;
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <View style={styles.container}>
+      <Text>Tip Calculator</Text>
+      <Text>Enter the billing amount</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="..."
+        keyboardType="numeric"
+        value={value}
+        onChangeText={handleTextChange}
+        ></TextInput>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        {hasInput && (
+          <View>
+            <Pressable
+              onPress={() => [calculateTax(15), console.log("15% tapped")]
+              }
+            >
+              <Text style={styles.text}>15%</Text>
+              </Pressable>
+              
+            <Pressable
+              onPress={() => [calculateTax(18), console.log("18% tapped")]
+              }
+            >
+              <Text style={styles.text}>18%</Text>
+              </Pressable>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+            <Pressable
+              onPress={() => [calculateTax(20), console.log("20% tapped")]
+              }
+            >
+              <Text style={styles.text}>20%</Text>
+              </Pressable>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+            <Pressable
+              onPress={() => [calculateTax(25), console.log("25% tapped")]
+              }
+            >
+              <Text style={styles.text}>25%</Text>
+              </Pressable>
+          </View>
+        )}
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+
+    <Text
+    >
+      Total Bill: {Math.round(result * 100) / 100
+      }</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+
+  input: {
+    borderWidth: 1.5,       // Thickness of the outline
+    borderColor: '#007AFF', // Outline color
+    borderRadius: 8,        // Rounded corners
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: '#000',
+    backgroundColor: '#fff',
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+
+  text: {
+    borderWidth: 1.5,       // Thickness of the outline
+    borderColor: '#007AFF', // Outline color
+    borderRadius: 8,        // Rounded corners
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: '#000',
+    backgroundColor: '#fff',
+  }
 });
